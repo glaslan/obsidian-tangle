@@ -1,3 +1,10 @@
+# Obsidian Tangle
+
+(Under *slow* development, it is not in a working state yet)
+
+This is a plugin for Obsidian that parses code blocks in notes and places them into the appropriate file to be run as a program. The pluging is based on Emac's babel-tangle functionality.
+
+
 # Obsidian Sample Plugin
 
 This is a sample plugin for Obsidian (https://obsidian.md).
