@@ -1,31 +1,47 @@
-import {Notice, Plugin} from 'obsidian'
+import {Notice, Plugin, App, FileSystemAdapter} from 'obsidian'
 import { promises as fsPromises } from 'fs';
 import { join } from 'path';
 
-export default class TanglePlugin extends Plugin{
+
+class Parser {
+
+	constructor() {
+	}
+
+	public parseCodeExtension(fileContent?: string){
+		const rExpFileExtension : RegExp = /(?<=```)(\S+)/gm;
+		if (fileContent){
+			const match = rExpFileExtension.exec(fileContent);
+			if (match)
+				return match[1].toLowerCase();
+			throw new Error('No file extensions were found by the parseCodeExtension function')
+		}
+		throw new Error('fileContent is undefined');
+	}
+}
+
+
+export default class TanglePlugin extends Plugin {
 
 	onload() {
-		// This code adds a icon to the left vertical ribbon that dispays a 
-		// message when clicked
-		this.addRibbonIcon('dice', 'Greet', async () => {
-			const file = this.app.workspace.getActiveFile();
+		const parser = new Parser();
+		this.addRibbonIcon('pen', 'Tangle', async () => {
+			let file = this.app.workspace.getActiveFile();
+			console.log(file);
 			if(file){
-				const content = await this.app.vault.read(file);
-				let code : string = this.getCodeBlocks(content);
-				let extension : string = this.getCodeExtension(content);
-				this.writeCodeToFile("", file.basename, extension, code);
+				let tempFilePath = this.getVaultAbsolutePath(this.app) + "/" + file.path;
+				let filePath = tempFilePath.replace(new RegExp(file.name, 'g'), '');
+				console.log(filePath);
+				let content = await this.app.vault.read(file);
+				let code : string = await this.getCodeBlocks(content);
+				let extension : string | undefined = parser.parseCodeExtension(content);
+				if(filePath){
+					this.writeCodeToFile(filePath, file.basename, code, extension);
+				}
 			}
-			
 		});
 		console.log("tangle is loaded");
 
-		this.app.workspace.on('active-leaf-change', async () => {
-			const file = this.app.workspace.getActiveFile();
-			if(file){
-				const content = await this.app.vault.read(file);
-				console.log(content);
-			}
-		});
 	}
 
 	async onunload() {
@@ -33,19 +49,28 @@ export default class TanglePlugin extends Plugin{
 		console.log('Unloading Tangle')
 	}
 
-	private async writeCodeToFile(path: string, filename: string, extension: string, data: string) {
+	private getVaultAbsolutePath(app: App) {
+		let adapter = app.vault.adapter;
+		if (adapter instanceof FileSystemAdapter) {
+			return adapter.getBasePath();
+		}
+		return null;
+	}
+
+	private async writeCodeToFile(path: string, filename: string, data: string, extension?: string) {
 		let file: string = filename + "." + extension;
+		let filePath = join(path, file);
+		console.log("file is " + file);
+		console.log("filePath is " + filePath);
 		try {
-			await fsPromises.writeFile(join(path, file), data, {
+			await fsPromises.writeFile(filePath, data, {
 			  flag: 'w',
 			});
 		
 			const contents = await fsPromises.readFile(
-			  join(path, file),
-			  'utf-8',
+			  (path + filename + ".md")
 			);
 			console.log(contents);
-		
 			return contents;
 		  } catch (err) {
 			console.log(err);
@@ -53,17 +78,11 @@ export default class TanglePlugin extends Plugin{
 		  }
 	}
 
-	private getCodeExtension(fileContent?: string){
-		let codeExtension : string = "";
-		const rExpFileExtension : RegExp = /(?<=^```)(\w)/gm;
-		codeExtension += fileContent?.match(rExpFileExtension);
-		console.log(codeExtension);
-		return codeExtension[0].toLowerCase();
-	}
+
 
 	private getCodeBlocks(fileContent?: string){
 		let code : string = "";
-		const rExp : RegExp = /(?<=^```\w\s)([^```]*)/gm;
+		const rExp : RegExp = /(?<=```\S+\s)([\s\S]*?)(?=```)/gm;
 		code += fileContent?.match(rExp)?.join("");
 		console.log(code);
 		return code;
