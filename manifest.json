@@ -1,11 +1,10 @@
 {
 	"id": "tangle-plugin",
-	"name": "Tangle Plugin",
+	"name": "Tangle",
 	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Parses code blocks in notes and exports them to a source code file.",
 	"author": "glaslan",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"authorUrl": "https://github.com/glaslan",
 	"isDesktopOnly": true
 }

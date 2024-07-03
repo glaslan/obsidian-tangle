@@ -1,4 +1,4 @@
-import { Notice, Plugin, App, FileSystemAdapter } from 'obsidian'
+import { Plugin, App, FileSystemAdapter } from 'obsidian'
 import { promises as fsPromises } from 'fs';
 import { join } from 'path';
 import { Parser } from 'parser'
@@ -29,7 +29,6 @@ export default class TanglePlugin extends Plugin {
 			},
 		});
 		console.log("tangle is loaded");
-
 	}
 
 
