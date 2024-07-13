@@ -1,9 +1,11 @@
 export class Parser {
 
-	constructor() {
-	}
-
-	public parseCodeExtension(fileContent: string){
+	/**
+	 * Finds the extension of the first code block in the markdown file.
+	 * @param fileContent - The text content of a markdown file.
+	 * @returns The language extension of the first code block.
+	 */
+	public parseCodeExtension(fileContent: string) : any{
 		const rExpFileExtension : RegExp = /(?<=```)(\S+)/gm;
 		if (fileContent){
 			const match = rExpFileExtension.exec(fileContent);
@@ -14,11 +16,18 @@ export class Parser {
 		throw new Error('fileContent is undefined');
 	}
 
-    public parseCodeBlocks(fileContent: string){
+	/**
+	 * Gets the text inside all code blocks of a markdown file.
+	 * @param fileContent - The text content of a markdown file.
+	 * @returns The text from all of the code blocks as a single string.
+	 */
+    public parseCodeBlocks(fileContent: string) : string{
 		let code : string = "";
 		const rExp : RegExp = /(?<=```\S+\s)([\s\S]*?)(?=```)/gm;
 		code += fileContent.match(rExp)?.join("");
 		console.log(code);
 		return code;
 	}
+
+	public parseYaml(){}
 }

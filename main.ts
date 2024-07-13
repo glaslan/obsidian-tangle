@@ -20,7 +20,7 @@ export default class TanglePlugin extends Plugin {
 					let filePath = tempFilePath.replace(new RegExp(file.name, 'g'), '');
 					console.log(filePath);
 					let content = await this.app.vault.read(file);
-					let code: string = await this.getCodeBlocks(content);
+					let code: string = await parser.parseCodeBlocks(content);
 					let extension: string | undefined = parser.parseCodeExtension(content);
 					if (filePath) {
 						this.writeCodeToFile(filePath, file.basename, code, extension);
@@ -37,7 +37,11 @@ export default class TanglePlugin extends Plugin {
 		console.log('Unloading Tangle')
 	}
 
-
+	/**
+	 * Gets the absolute path of the currently opened Obsidian vault.
+	 * @param app - Obsidian App object
+	 * @returns The path of the current Obsidian vault or NULL if the path can not be found.
+	 */
 	private getVaultAbsolutePath(app: App) {
 		let adapter = app.vault.adapter;
 		if (adapter instanceof FileSystemAdapter) {
@@ -46,7 +50,14 @@ export default class TanglePlugin extends Plugin {
 		return null;
 	}
 
-
+	/**
+	 * Writes code to a file at a specified path.
+	 * @param path - The absolute path that the file will be written to.
+	 * @param filename - The name of the file, without the extension, that is being exported.
+	 * @param data - The information that is being written in the file.
+	 * @param extension - The extension name that will be appended to the filename.
+	 * @returns The file contents on a successful write or an error if something goes wrong.
+	 */
 	private async writeCodeToFile(path: string, filename: string, data: string, extension?: string) {
 		let file: string = filename + "." + extension;
 		let filePath = join(path, file);
@@ -66,14 +77,5 @@ export default class TanglePlugin extends Plugin {
 			console.log(err);
 			return 'Something went wrong while writing code to file';
 		}
-	}
-
-
-	private getCodeBlocks(fileContent?: string) {
-		let code: string = "";
-		const rExp: RegExp = /(?<=```\S+\s)([\s\S]*?)(?=```)/gm;
-		code += fileContent?.match(rExp)?.join("");
-		console.log(code);
-		return code;
 	}
 }
