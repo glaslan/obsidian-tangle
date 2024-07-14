@@ -1,6 +1,6 @@
 {
-	"name": "tangle-plugin",
-	"version": "1.0.0",
+	"name": "obsidian-tangle",
+	"version": "1.0.1",
 	"description": "A plugin that parses code blocks in a note and saves them to a single file",
 	"main": "main.js",
 	"scripts": {
