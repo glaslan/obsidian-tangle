@@ -29,5 +29,4 @@ export class Parser {
 		return code;
 	}
 
-	public parseYaml(){}
 }
