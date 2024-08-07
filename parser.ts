@@ -25,7 +25,6 @@ export class Parser {
 		let code : string = "";
 		const rExp : RegExp = /(?<=```\S+\s)([\s\S]*?)(?=```)/gm;
 		code += fileContent.match(rExp)?.join("");
-		console.log(code);
 		return code;
 	}
 
