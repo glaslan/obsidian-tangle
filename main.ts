@@ -3,14 +3,19 @@ import { promises as fsPromises } from 'fs';
 import { join } from 'path';
 import { Parser } from 'parser'
 
-interface TangleSettings {
-    outputPath: string;
-}
+
 
 export default class TanglePlugin extends Plugin {
 
 
+
+	/**
+	 * Called when the plugin is loaded.
+	 * Initializes the plugin by adding a command to tangle code blocks.
+	 * @return {void}
+	 */
 	onload() {
+
 		const parser = new Parser();
 		this.addCommand({
 			id: "tangle-code-blocks",
@@ -21,7 +26,7 @@ export default class TanglePlugin extends Plugin {
 					let tempFilePath = this.getVaultAbsolutePath(this.app) + "/" + file.path;
 					let filePath = tempFilePath.replace(new RegExp(file.name, 'g'), '');
 					let content = await this.app.vault.read(file);
-					let code: string = await parser.parseCodeBlocks(content);
+					let code: string = parser.parseCodeBlocks(content);
 					let extension: string | undefined = parser.parseCodeExtension(content);
 					if (filePath) {
 						this.writeCodeToFile(filePath, file.basename, code, extension);
@@ -35,13 +40,15 @@ export default class TanglePlugin extends Plugin {
 	async onunload() {
 	}
 
+
+
 	/**
 	 * Gets the absolute path of the currently opened Obsidian vault.
 	 * @param app - Obsidian App object
 	 * @returns The path of the current Obsidian vault or NULL if the path can not be found.
 	 */
 	private getVaultAbsolutePath(app: App) {
-		let adapter = app.vault.adapter;
+		const adapter = app.vault.adapter;
 		if (adapter instanceof FileSystemAdapter) {
 			return adapter.getBasePath();
 		}

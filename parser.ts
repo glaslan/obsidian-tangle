@@ -5,8 +5,8 @@ export class Parser {
 	 * @param fileContent - The text content of a markdown file.
 	 * @returns The language extension of the first code block.
 	 */
-	public parseCodeExtension(fileContent: string) : any{
-		const rExpFileExtension : RegExp = /(?<=```)(\S+)/gm;
+	public parseCodeExtension(fileContent: string) : string{
+		const rExpFileExtension = /(?<=```)(\S+)/gm;
 		if (fileContent){
 			const match = rExpFileExtension.exec(fileContent);
 			if (match)
@@ -22,8 +22,8 @@ export class Parser {
 	 * @returns The text from all of the code blocks as a single string.
 	 */
     public parseCodeBlocks(fileContent: string) : string{
-		let code : string = "";
-		const rExp : RegExp = /(?<=```\S+\s)([\s\S]*?)(?=```)/gm;
+		let code = "";
+		const rExp = /(?<=```\S+\s)([\s\S]*?)(?=```)/gm;
 		code += fileContent.match(rExp)?.join("");
 		return code;
 	}
